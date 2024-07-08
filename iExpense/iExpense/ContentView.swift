@@ -15,9 +15,15 @@ class User {
 }
 
 struct SecondView: View {
+    @Environment(\.dismiss) var dismissView
     let name: String
     var body: some View {
-        Text("Hello \(name)")
+        VStack {
+            Text("Hello \(name)")
+            Button("Dismiss The Sheet") {
+                dismissView()
+            }
+        }
     }
 }
 
