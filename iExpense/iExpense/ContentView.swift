@@ -32,27 +32,14 @@ struct ContentView: View {
     @State private var showingSheet = false
     @State private var numbers = [Int]()
     @State private var currentNumber = 1
+    @State private var tapCount = 1
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(numbers, id: \.self) {
-                        Text("row: \($0)")
-                    }
-                    .onDelete { index in
-                        deleteRow(at: index)
-                    }
-                }
-                Button("Add number") {
-                    numbers.append(currentNumber)
-                    currentNumber += 1
-                }
+        VStack {
+            Button("Tap Count: \(tapCount)") {
+                tapCount += 1
             }
-            .toolbar {
-                EditButton()
-            }
-        }
+        } 
     }
     
     private func deleteRow(at index: IndexSet) {
