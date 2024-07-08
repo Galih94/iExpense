@@ -27,19 +27,23 @@ struct SecondView: View {
     }
 }
 
+let tapCountKey: String = "Tap"
+
 struct ContentView: View {
     @State private var user = User()
     @State private var showingSheet = false
     @State private var numbers = [Int]()
     @State private var currentNumber = 1
-    @State private var tapCount = 1
+    @State private var tapCount = UserDefaults.standard.integer(forKey: tapCountKey)
     
     var body: some View {
         VStack {
             Button("Tap Count: \(tapCount)") {
                 tapCount += 1
+                
+                UserDefaults.standard.set(tapCount, forKey: tapCountKey)
             }
-        } 
+        }
     }
     
     private func deleteRow(at index: IndexSet) {
