@@ -14,15 +14,23 @@ class User {
     var lastName: String = "Baggins"
 }
 
+struct SecondView: View {
+    var body: some View {
+        Text("Second View")
+    }
+}
+
 struct ContentView: View {
     @State private var user = User()
-    
+    @State private var showingSheet = false
     var body: some View {
         VStack {
-            Text("Hello, \(user.firstName) \(user.lastName)")
-            
-            TextField("First name", text: $user.firstName)
-            TextField("Last name", text: $user.lastName)
+            Button("Show The Sheet") {
+                showingSheet.toggle()
+            }
+            .sheet(isPresented: $showingSheet) {
+                SecondView()
+            }
         }
         .padding()
     }
