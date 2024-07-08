@@ -28,6 +28,7 @@ struct SecondView: View {
 }
 
 let tapCountKey: String = "Tap"
+let tapCountAppStorageKey: String = "TapAppStorageKey"
 
 struct ContentView: View {
     @State private var user = User()
@@ -35,13 +36,12 @@ struct ContentView: View {
     @State private var numbers = [Int]()
     @State private var currentNumber = 1
     @State private var tapCount = UserDefaults.standard.integer(forKey: tapCountKey)
+    @AppStorage(tapCountAppStorageKey) private var tapCountAppStorage = 0
     
     var body: some View {
         VStack {
-            Button("Tap Count: \(tapCount)") {
-                tapCount += 1
-                
-                UserDefaults.standard.set(tapCount, forKey: tapCountKey)
+            Button("Tap Count AppStorage: \(tapCountAppStorage)") {
+                tapCountAppStorage += 1
             }
         }
     }
