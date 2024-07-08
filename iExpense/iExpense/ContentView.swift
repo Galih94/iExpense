@@ -8,10 +8,9 @@
 import SwiftUI
 import Observation
 
-@Observable
-class User {
-    var firstName: String = "Bilbo"
-    var lastName: String = "Baggins"
+struct User: Codable {
+    var firstName: String
+    var lastName: String
 }
 
 struct SecondView: View {
@@ -27,27 +26,48 @@ struct SecondView: View {
     }
 }
 
-let tapCountKey: String = "Tap"
-let tapCountAppStorageKey: String = "TapAppStorageKey"
+let key: String = "Key"
 
 struct ContentView: View {
-    @State private var user = User()
-    @State private var showingSheet = false
-    @State private var numbers = [Int]()
-    @State private var currentNumber = 1
-    @State private var tapCount = UserDefaults.standard.integer(forKey: tapCountKey)
-    @AppStorage(tapCountAppStorageKey) private var tapCountAppStorage = 0
+    @State private var user = User(firstName: "", lastName: "")
     
     var body: some View {
         VStack {
-            Button("Tap Count AppStorage: \(tapCountAppStorage)") {
-                tapCountAppStorage += 1
+            Text("Saved user: \(getUserFirstName) \(getUserLastName)")
+            TextField("First Name", text: $user.firstName)
+            TextField("Last Name", text: $user.lastName)
+            Button("Save") {
+                saveUser()
             }
         }
     }
     
-    private func deleteRow(at index: IndexSet) {
-        numbers.remove(atOffsets: index)
+    private func saveUser() {
+        let encoder = JSONEncoder()
+        
+        if let data = try? encoder.encode(user) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+    
+    private var getUserFirstName: String {
+        
+        let decoder = JSONDecoder()
+        if let data = UserDefaults.standard.data(forKey: key), let user = try? decoder.decode(User.self, from: data) {
+            
+            return "\(user.firstName)"
+        } else {
+            return ""
+        }
+    }
+    
+    private var getUserLastName: String {
+        let decoder = JSONDecoder()
+        if let data = UserDefaults.standard.data(forKey: key), let user = try? decoder.decode(User.self, from: data) {
+            return user.lastName
+        } else {
+            return ""
+        }
     }
     
 }
