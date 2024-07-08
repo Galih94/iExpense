@@ -30,16 +30,21 @@ struct SecondView: View {
 struct ContentView: View {
     @State private var user = User()
     @State private var showingSheet = false
+    @State private var numbers = [Int]()
+    @State private var currentNumber = 1
+    
     var body: some View {
         VStack {
-            Button("Show The Sheet") {
-                showingSheet.toggle()
+            List {
+                ForEach(numbers, id: \.self) {
+                    Text("row: \($0)")
+                }
             }
-            .sheet(isPresented: $showingSheet) {
-                SecondView(name: "Galih")
+            Button("Add number") {
+                numbers.append(currentNumber)
+                currentNumber += 1
             }
         }
-        .padding()
     }
 }
 
