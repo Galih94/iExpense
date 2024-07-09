@@ -8,7 +8,7 @@
 import Observation
 import SwiftUI
 
-struct ExpenseItem {
+struct ExpenseItem: Identifiable {
     let id: UUID = UUID()
     let name: String
     let type: String
@@ -25,7 +25,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(_expenses._items, id: \.id) { item in
+                ForEach(_expenses._items) { item in
                     Text(item.name)
                 }
                 .onDelete { index in
