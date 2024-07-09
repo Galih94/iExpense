@@ -8,16 +8,33 @@
 import Observation
 import SwiftUI
 
-struct ExpenseItem: Identifiable {
-    let id: UUID = UUID()
+struct ExpenseItem: Identifiable, Codable {
+    var id: UUID = UUID()
     let name: String
     let type: String
     let amount: Double
 }
 
+let itemsKey = "itemsKey"
+
 @Observable
 class Expenses {
-    var _items = [ExpenseItem]()
+    var _items = [ExpenseItem]() {
+        didSet {
+            if let data = try? JSONEncoder().encode(_items) {
+                UserDefaults.standard.setValue(data, forKey: itemsKey)
+            }
+        }
+    }
+    
+    init() {
+        guard let savedItems = UserDefaults.standard.data(forKey: itemsKey),
+           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) else {
+            self._items = []
+            return
+        }
+        self._items = decodedItems
+    }
 }
 
 struct ContentView: View {
