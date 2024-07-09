@@ -37,13 +37,12 @@ struct ContentView: View {
             .navigationTitle("iExpense")
             .toolbar {
                 Button("Add Expense", systemImage: "plus") {
-//                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
-//                    _expenses._items.append(expense)
+
                     _showingAddExpanse.toggle()
                 }
             }
             .sheet(isPresented: $_showingAddExpanse, content: {
-                AddView()
+                AddView(_expenses: _expenses)
             })
         }
     }
