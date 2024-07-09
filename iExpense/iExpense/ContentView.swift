@@ -45,7 +45,16 @@ struct ContentView: View {
         NavigationStack {
             List {
                 ForEach(_expenses._items) { item in
-                    Text(item.name)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(item.name)
+                                .foregroundStyle(.primary)
+                            Text(item.type)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Text(item.amount, format: .currency(code: "IDR"))
+                    }
                 }
                 .onDelete { index in
                     removeExpense(at: index)
