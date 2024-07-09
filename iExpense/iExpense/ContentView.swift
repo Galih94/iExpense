@@ -22,6 +22,8 @@ class Expenses {
 
 struct ContentView: View {
     @State private var _expenses = Expenses()
+    @State private var _showingAddExpanse = false
+    
     var body: some View {
         NavigationStack {
             List {
@@ -35,10 +37,14 @@ struct ContentView: View {
             .navigationTitle("iExpense")
             .toolbar {
                 Button("Add Expense", systemImage: "plus") {
-                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
-                    _expenses._items.append(expense)
+//                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
+//                    _expenses._items.append(expense)
+                    _showingAddExpanse.toggle()
                 }
             }
+            .sheet(isPresented: $_showingAddExpanse, content: {
+                AddView()
+            })
         }
     }
     
