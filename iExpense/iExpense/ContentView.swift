@@ -20,9 +20,21 @@ class Expenses {
 }
 
 struct ContentView: View {
+    @State private var _expenses = Expenses()
     var body: some View {
-        VStack {
-            Text("Hello world")
+        NavigationStack {
+            List {
+                ForEach(_expenses._items, id: \.name) { item in
+                    Text(item.name)
+                }
+            }
+            .navigationTitle("iExpense")
+            .toolbar {
+                Button("Add Expense", systemImage: "plus") {
+                    let expense = ExpenseItem(name: "Test", type: "Personal", amount: 5)
+                    _expenses._items.append(expense)
+                }
+            }
         }
     }
 }
