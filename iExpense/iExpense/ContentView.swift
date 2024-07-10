@@ -55,6 +55,7 @@ struct ContentView: View {
                         Spacer()
                         Text(item.amount, format: .currency(code: "IDR"))
                     }
+                    .foregroundStyle(item.amount < 50_001 ? Color.green : item.amount < 200_001 ? Color.primary : Color.red)
                 }
                 .onDelete { index in
                     removeExpense(at: index)
