@@ -15,25 +15,42 @@ struct ExpenseItem: Identifiable, Codable {
     let amount: Double
 }
 
-let itemsKey = "itemsKey"
+let personalItemsKey = "personalItemsKey"
+let businessItemsKey = "businessItemsKey"
 
 @Observable
 class Expenses {
-    var _items = [ExpenseItem]() {
+    var _personalItem: [ExpenseItem] {
         didSet {
-            if let data = try? JSONEncoder().encode(_items) {
-                UserDefaults.standard.setValue(data, forKey: itemsKey)
+            if let data = try? JSONEncoder().encode(_personalItem) {
+                UserDefaults.standard.setValue(data, forKey: personalItemsKey)
+            }
+        }
+    }
+    
+    var _businessItem: [ExpenseItem] {
+        didSet {
+            if let data = try? JSONEncoder().encode(_businessItem) {
+                UserDefaults.standard.setValue(data, forKey: businessItemsKey)
             }
         }
     }
     
     init() {
-        guard let savedItems = UserDefaults.standard.data(forKey: itemsKey),
-           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) else {
-            self._items = []
-            return
+        
+        if let savedItems = UserDefaults.standard.data(forKey: personalItemsKey),
+           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) {
+            self._personalItem = decodedItems
+        } else {
+            self._personalItem = []
         }
-        self._items = decodedItems
+        
+        if let savedItems = UserDefaults.standard.data(forKey: businessItemsKey),
+           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) {
+            self._businessItem = decodedItems
+        } else {
+            self._businessItem = []
+        }
     }
 }
 
@@ -44,22 +61,43 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(_expenses._items) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                                .foregroundStyle(.primary)
-                            Text(item.type)
-                                .foregroundStyle(.secondary)
+                Section {
+                    ForEach(_expenses._personalItem) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .foregroundStyle(.primary)
+                                Text(item.type)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(item.amount, format: .currency(code: "IDR"))
                         }
-                        Spacer()
-                        Text(item.amount, format: .currency(code: "IDR"))
+                        .foregroundStyle(item.amount < 50_001 ? Color.green : item.amount < 200_001 ? Color.primary : Color.red)
                     }
-                    .foregroundStyle(item.amount < 50_001 ? Color.green : item.amount < 200_001 ? Color.primary : Color.red)
+                    .onDelete { index in
+                        removeExpensePersonal(at: index)
+                    }
                 }
-                .onDelete { index in
-                    removeExpense(at: index)
+                Section {
+                    ForEach(_expenses._businessItem) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .foregroundStyle(.primary)
+                                Text(item.type)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(item.amount, format: .currency(code: "IDR"))
+                        }
+                        .foregroundStyle(item.amount < 50_001 ? Color.green : item.amount < 200_001 ? Color.primary : Color.red)
+                    }
+                    .onDelete { index in
+                        removeExpenseBusiness(at: index)
+                    }
                 }
+                
             }
             .navigationTitle("iExpense")
             .toolbar {
@@ -74,8 +112,12 @@ struct ContentView: View {
         }
     }
     
-    private func removeExpense(at index: IndexSet) {
-        _expenses._items.remove(atOffsets: index)
+    private func removeExpensePersonal(at index: IndexSet) {
+        _expenses._personalItem.remove(atOffsets: index)
+    }
+    
+    private func removeExpenseBusiness(at index: IndexSet) {
+        _expenses._businessItem.remove(atOffsets: index)
     }
 }
 

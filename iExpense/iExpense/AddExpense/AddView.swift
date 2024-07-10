@@ -31,7 +31,11 @@ struct AddView: View {
             .toolbar(content: {
                 Button("Save") {
                     let expense = ExpenseItem(name: _name, type: _type, amount: _amount)
-                    _expenses._items.append(expense)
+                    if _type == "Personal" {
+                        _expenses._personalItem.append(expense)
+                    } else {
+                        _expenses._businessItem.append(expense)
+                    }
                     dismiss()
                 }
             })
