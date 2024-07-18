@@ -29,14 +29,22 @@ struct AddView: View {
             }
             .navigationTitle("Add New Expense")
             .toolbar(content: {
-                Button("Save") {
-                    let expense = ExpenseItem(name: _name, type: _type, amount: _amount)
-                    if _type == "Personal" {
-                        _expenses._personalItem.append(expense)
-                    } else {
-                        _expenses._businessItem.append(expense)
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let expense = ExpenseItem(name: _name, type: _type, amount: _amount)
+                        if _type == "Personal" {
+                            _expenses._personalItem.append(expense)
+                        } else {
+                            _expenses._businessItem.append(expense)
+                        }
+                        dismiss()
                     }
-                    dismiss()
+                }
+                
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             })
         }
