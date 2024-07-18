@@ -81,7 +81,6 @@ struct CustomListExpenseView: View {
 
 struct ContentView: View {
     @State private var _expenses = Expenses()
-    @State private var _showingAddExpanse = false
     
     var body: some View {
         NavigationStack {
@@ -92,18 +91,16 @@ struct ContentView: View {
                 CustomListExpenseView(_expenseItem: _expenses._businessItem) { index in
                     removeExpenseBusiness(at: index)
                 }
-                
             }
             .navigationTitle("iExpense")
             .toolbar {
-                Button("Add Expense", systemImage: "plus") {
-
-                    _showingAddExpanse.toggle()
+                NavigationLink {
+                    AddView(_expenses: _expenses)
+                        .navigationBarBackButtonHidden(true)
+                } label: {
+                    Image(systemName:  "plus")
                 }
             }
-            .sheet(isPresented: $_showingAddExpanse, content: {
-                AddView(_expenses: _expenses)
-            })
         }
     }
     
