@@ -5,14 +5,26 @@
 //  Created by Galih Samudra on 08/07/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct CustomListExpenseView: View {
-    var _expenseItem: [ExpenseItem]
-    var _removeCallback: ((IndexSet) -> Void)?
+    @Query var expenseItem: [ExpenseItem]
+    var removeCallback: ((IndexSet) -> Void)?
+    
+    init(type: String, removeCallback: ((IndexSet) -> Void)?) {
+        _expenseItem = Query(filter: #Predicate<ExpenseItem> { item in
+            item.type == type
+        }, sort: [
+            SortDescriptor(\ExpenseItem.name),
+            SortDescriptor(\ExpenseItem.amount),
+        ])
+        self.removeCallback = removeCallback
+    }
+    
     var body: some View {
         Section {
-            ForEach(_expenseItem) { item in
+            ForEach(expenseItem) { item in
                 HStack {
                     VStack(alignment: .leading) {
                         Text(item.name)
@@ -26,46 +38,55 @@ struct CustomListExpenseView: View {
                 .foregroundStyle(item.amount < 50_001 ? Color.green : item.amount < 200_001 ? Color.primary : Color.red)
             }
             .onDelete { index in
-                _removeCallback?(index)
+                removeCallback?(index)
             }
         }
     }
 }
 
 struct ContentView: View {
-    @State private var _expenses = Expenses()
+    @Environment(\.modelContext) var modelContext
+    @Query(sort: [
+        SortDescriptor(\ExpenseItem.name),
+        SortDescriptor(\ExpenseItem.amount),
+    ]) var expenseItems: [ExpenseItem]
+    
+    @State private var expenseType: ExpenseType = ExpenseType.Personal
     
     var body: some View {
         NavigationStack {
             List {
-                CustomListExpenseView(_expenseItem: _expenses._personalItem) { index in
-                    removeExpensePersonal(at: index)
-                }
-                CustomListExpenseView(_expenseItem: _expenses._businessItem) { index in
-                    removeExpenseBusiness(at: index)
+                CustomListExpenseView(type: expenseType.rawValue) { index in
+                    removeExpense(at: index)
                 }
             }
             .navigationTitle("iExpense")
             .toolbar {
+                Button(expenseType == .Personal ?  "Business" : "Personal") {
+                    if expenseType == .Personal {
+                        expenseType = .Business
+                    } else {
+                        expenseType = .Personal
+                    }
+                }
+
                 NavigationLink {
-                    AddView(_expenses: _expenses)
+                    AddView()
                         .navigationBarBackButtonHidden(true)
                 } label: {
-                    Image(systemName:  "plus")
+                    Image(systemName: "plus")
                 }
             }
         }
     }
     
-    private func removeExpensePersonal(at index: IndexSet) {
-        _expenses._personalItem.remove(atOffsets: index)
-    }
-    
-    private func removeExpenseBusiness(at index: IndexSet) {
-        _expenses._businessItem.remove(atOffsets: index)
+    private func removeExpense(at index: IndexSet) {
+        index.forEach { i in
+            modelContext.delete(expenseItems[i])
+        }
     }
 }
 
 #Preview {
-    ContentView()
+    return ContentView()
 }

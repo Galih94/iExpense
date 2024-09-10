@@ -7,49 +7,31 @@
 
 import Observation
 import Foundation
+import SwiftData
 
-struct ExpenseItem: Identifiable, Codable {
+@Model
+class ExpenseItem {
     var id: UUID = UUID()
     let name: String
     let type: String
     let amount: Double
+    init(name: String, type: String, amount: Double) {
+        self.name = name
+        self.type = type
+        self.amount = amount
+    }
 }
 
 let personalItemsKey = "personalItemsKey"
 let businessItemsKey = "businessItemsKey"
 
-@Observable
-class Expenses {
-    var _personalItem: [ExpenseItem] {
-        didSet {
-            if let data = try? JSONEncoder().encode(_personalItem) {
-                UserDefaults.standard.setValue(data, forKey: personalItemsKey)
-            }
-        }
-    }
-    
-    var _businessItem: [ExpenseItem] {
-        didSet {
-            if let data = try? JSONEncoder().encode(_businessItem) {
-                UserDefaults.standard.setValue(data, forKey: businessItemsKey)
-            }
-        }
-    }
-    
-    init() {
-        
-        if let savedItems = UserDefaults.standard.data(forKey: personalItemsKey),
-           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) {
-            self._personalItem = decodedItems
-        } else {
-            self._personalItem = []
-        }
-        
-        if let savedItems = UserDefaults.standard.data(forKey: businessItemsKey),
-           let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) {
-            self._businessItem = decodedItems
-        } else {
-            self._businessItem = []
-        }
-    }
-}
+//@Model
+//class Expenses {
+//    var _personalItem: [ExpenseItem]
+//    var _businessItem: [ExpenseItem]
+//    
+//    init(_personalItem: [ExpenseItem], _businessItem: [ExpenseItem]) {
+//        self._personalItem = _personalItem
+//        self._businessItem = _businessItem
+//    }
+//}

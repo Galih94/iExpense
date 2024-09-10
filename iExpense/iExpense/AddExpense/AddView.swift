@@ -5,16 +5,23 @@
 //  Created by Galih Samudra on 09/07/24.
 //
 
+import SwiftData
 import SwiftUI
+
+
+enum ExpenseType: String {
+    case Personal, Business
+}
 
 struct AddView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) var modelContext
+
     @State private var _name: String = "Issue Name"
-    @State private var _type: String = "Personal"
+    @State private var _type: String =  ExpenseType.Personal.rawValue
     @State private var _amount: Double = 0.0
-    var _expenses: Expenses
     
-    let types = ["Personal", "Business"]
+    let types = [ExpenseType.Personal.rawValue, ExpenseType.Business.rawValue]
     var body: some View {
         NavigationStack {
             Form {
@@ -32,11 +39,7 @@ struct AddView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         let expense = ExpenseItem(name: _name, type: _type, amount: _amount)
-                        if _type == "Personal" {
-                            _expenses._personalItem.append(expense)
-                        } else {
-                            _expenses._businessItem.append(expense)
-                        }
+                        modelContext.insert(expense)
                         dismiss()
                     }
                 }
@@ -52,5 +55,6 @@ struct AddView: View {
 }
 
 #Preview {
-    AddView(_expenses: Expenses())
+    AddView()
+    
 }
