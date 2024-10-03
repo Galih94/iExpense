@@ -32,6 +32,8 @@ struct CustomListExpenseView: View {
                         Text(item.type)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityLabel("\(item.name), IDR \(item.amount)")
+                    .accessibilityHint("\(item.type)")
                     Spacer()
                     Text(item.amount, format: .currency(code: "IDR"))
                 }
